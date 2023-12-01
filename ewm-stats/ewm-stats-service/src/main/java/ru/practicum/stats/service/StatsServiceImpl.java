@@ -1,19 +1,22 @@
-package ru.practicum.statsservice.service;
+package ru.practicum.stats.service;
 
 import dto.EndpointHit;
 import dto.ViewStats;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.statsservice.exception.NotFoundException;
-import ru.practicum.statsservice.exception.ValidationException;
-import ru.practicum.statsservice.mapper.EndpointHitMapper;
-import ru.practicum.statsservice.model.Hit;
-import ru.practicum.statsservice.repository.HitRepository;
+import ru.practicum.stats.exception.NotFoundException;
+import ru.practicum.stats.exception.ValidationException;
+import ru.practicum.stats.mapper.EndpointHitMapper;
+import ru.practicum.stats.mapper.StatMapper;
+import ru.practicum.stats.model.Hit;
+import ru.practicum.stats.repository.HitRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -32,19 +35,17 @@ public class StatsServiceImpl implements StatsService {
     public List<ViewStats> get(String start, String end, String[] uris, Boolean unique) {
         log.info("Получение статистики по параметрам: start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         try {
-            List<ViewStats> result;
             LocalDateTime startDate = LocalDateTime.parse(start, EndpointHitMapper.DATE_TIME_FORMATTER);
             LocalDateTime endDate = LocalDateTime.parse(end, EndpointHitMapper.DATE_TIME_FORMATTER);
-            if (uris == null || uris.length == 0)
-                if (unique == null || !unique)
-                    result = hitRepository.getStats(startDate, endDate);
-                else
-                    result = hitRepository.getUniqueStats(startDate, endDate);
-            else if (unique == null || !unique)
-                result = hitRepository.getStats(startDate, endDate, String.join(", ", uris));
+            List<String> urisList = (uris != null && uris.length > 0) ? Arrays.asList(uris) : null;
+            if (unique == null || !unique)
+                return hitRepository.getStats(startDate, endDate, urisList)
+                        .stream().map(StatMapper::toViewStats)
+                        .collect(Collectors.toList());
             else
-                result = hitRepository.getUniqueStats(startDate, endDate, String.join(", ", uris));
-            return result;
+                return hitRepository.getUniqueStats(startDate, endDate, urisList)
+                        .stream().map(StatMapper::toViewStats)
+                        .collect(Collectors.toList());
         } catch (DateTimeParseException e) {
             throw new ValidationException("Неверный формат даты начала или окончания диапазона статистики: " + e.getMessage());
         }

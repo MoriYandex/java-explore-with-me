@@ -1,11 +1,11 @@
-package ru.practicum.statsservice.controller;
+package ru.practicum.stats.controller;
 
 import dto.EndpointHit;
 import dto.ViewStats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.statsservice.service.StatsService;
+import ru.practicum.stats.service.StatsService;
 
 import java.util.List;
 

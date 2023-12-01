@@ -79,7 +79,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <start-class>ru.practicum.statsservice.ExploreWithMeStatsService</start-class>
+        <start-class>ru.practicum.stats.ExploreWithMeStatsService</start-class>
     </properties>
     <build>
         <plugins>

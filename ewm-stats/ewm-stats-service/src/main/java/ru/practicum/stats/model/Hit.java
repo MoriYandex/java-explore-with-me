@@ -1,4 +1,4 @@
-package ru.practicum.statsservice.model;
+package ru.practicum.stats.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

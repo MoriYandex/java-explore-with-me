@@ -2,13 +2,13 @@ package ru.practicum.statsservice.service;
 
 import dto.EndpointHit;
 import dto.ViewStats;
-import ru.practicum.statsservice.exception.NotFoundException;
-import ru.practicum.statsservice.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import ru.practicum.statsservice.exception.NotFoundException;
+import ru.practicum.statsservice.exception.ValidationException;
 import ru.practicum.statsservice.mapper.EndpointHitMapper;
 import ru.practicum.statsservice.model.Hit;
-import org.springframework.stereotype.Component;
 import ru.practicum.statsservice.repository.HitRepository;
 
 import java.time.LocalDateTime;

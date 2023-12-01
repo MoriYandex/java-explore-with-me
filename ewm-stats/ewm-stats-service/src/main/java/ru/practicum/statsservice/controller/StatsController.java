@@ -29,7 +29,7 @@ public class StatsController {
     }
 
     @GetMapping(path = "/stats/{id}")
-    public EndpointHit get(@PathVariable(name = "id") Long id){
+    public EndpointHit get(@PathVariable(name = "id") Long id) {
         return statsService.getById(id);
     }
 }

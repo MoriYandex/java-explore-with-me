@@ -24,6 +24,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<evm-stats-client.version>0.0.1-SNAPSHOT</evm-stats-client.version>
 	</properties>
 
 	<build>

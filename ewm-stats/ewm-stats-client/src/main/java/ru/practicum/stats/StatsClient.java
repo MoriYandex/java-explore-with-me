@@ -17,10 +17,10 @@ public class StatsClient extends BaseClient {
     @Autowired
     public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
         super(
-            builder
-                .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
-                .requestFactory(HttpComponentsClientHttpRequestFactory::new)
-                .build()
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
+                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .build()
         );
     }
 
@@ -30,10 +30,10 @@ public class StatsClient extends BaseClient {
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
-            "uris", String.join(",", uris),
-            "unique", unique,
-            "start", start,
-            "end", end
+                "uris", String.join(",", uris),
+                "unique", unique,
+                "start", start,
+                "end", end
         );
 
         return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);

@@ -31,7 +31,7 @@ import ru.practicum.main.user.mapper.UserMapper;
 import ru.practicum.main.user.model.User;
 import ru.practicum.main.user.repository.UserRepository;
 import ru.practicum.main.util.StatsClientHelper;
-import ru.practicum.stats.client.StatsClient;
+import ru.practicum.stats.StatsClient;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;

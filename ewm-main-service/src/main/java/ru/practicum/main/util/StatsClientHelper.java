@@ -3,7 +3,7 @@ package ru.practicum.main.util;
 import dto.EndpointHit;
 import dto.ViewStats;
 import lombok.experimental.UtilityClass;
-import ru.practicum.stats.client.StatsClient;
+import ru.practicum.stats.StatsClient;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -30,7 +30,7 @@ public class StatsClientHelper {
                                              String end,
                                              List<String> uris,
                                              Boolean unique) {
-        List<ViewStats> stats = statsClient.getStats(start, end, uris, unique);
+        List<ViewStats> stats = (List<ViewStats>) statsClient.getStats(start, end, uris, unique).getBody();
         return stats.stream().collect(Collectors.toMap(
                 ViewStats::getUri,
                 ViewStats::getHits));

@@ -2,11 +2,10 @@ package ru.practicum.main;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.openfeign.EnableFeignClients;
-import ru.practicum.stats.config.StatsClientConfig;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@EnableFeignClients(defaultConfiguration = {StatsClientConfig.class}, basePackageClasses = {ru.practicum.stats.client.StatsClient.class})
+@ComponentScan(basePackages = {"ru.practicum.stats"})
 public class ExploreWithMe {
     public static void main(String[] args) {
         SpringApplication.run(ExploreWithMe.class, args);

@@ -55,7 +55,7 @@ public class RequestServiceImpl implements RequestService {
             throw new InitiatorConflictException();
         if (event.getState() != EventState.PUBLISHED)
             throw new UnpublishedEventConflictException();
-        if (event.getParticipants().size() >= event.getParticipantLimit())
+        if (event.getParticipantLimit() > 0 && event.getParticipants().size() >= event.getParticipantLimit())
             throw new ParticipantLimitConflictException();
         return RequestMapper.toDto(requestRepository.save(Request.builder()
                 .requester(user)

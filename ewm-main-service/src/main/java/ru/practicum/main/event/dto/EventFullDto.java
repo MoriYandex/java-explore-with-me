@@ -83,7 +83,7 @@ public class EventFullDto {
     /**
      * Количество просмотрев события
      */
-    private Integer views;
+    private Long views;
     /**
      * Рейтинг события
      */

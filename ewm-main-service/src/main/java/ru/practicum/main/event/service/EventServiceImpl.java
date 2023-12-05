@@ -62,9 +62,18 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto getPublicEventById(Long eventId, HttpServletRequest request) {
         log.info("Event Service. Get public events by eventId: {}", eventId);
-        //StatsClientHelper.makePublicEndpointHit(statsClient, request);
         StatsClientHelper.makePublicEndpointHit(statsClient, request);
-        return parseToFullDtoWithMappers(eventRepository.findByIdAndPublished(eventId).orElseThrow(() -> new EventNotFoundException(eventId)));
+        try{
+        Map<String, Long> viewMap = StatsClientHelper.getViews(statsClient,
+                "0001-01-01 00:00:01",
+                "9999-12-31 23:59:59",
+                List.of(request.getRequestURI()),
+                true);
+        EventFullDto result = parseToFullDtoWithMappers(eventRepository.findByIdAndPublished(eventId).orElseThrow(() -> new EventNotFoundException(eventId)));
+        result.setViews(viewMap.get(request.getRequestURI()));
+        return result;
+        }catch (Exception e) {
+            throw e;}
     }
 
     @Override
@@ -306,7 +315,7 @@ public class EventServiceImpl implements EventService {
     }
 
     /**
-     * Проверка на то что пользователь является инициатором осбытия
+     * Проверка на то что пользователь является инициатором события
      *
      * @param userId    идентификатор пользователя
      * @param initiator инициатор события

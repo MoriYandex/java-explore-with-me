@@ -33,7 +33,6 @@ public class AdminUserController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public UserDto createUser(@RequestBody @Valid NewUserRequestDto newUserRequestDto) {
-        log.info("111111111");
         return userService.createUser(newUserRequestDto);
     }
 

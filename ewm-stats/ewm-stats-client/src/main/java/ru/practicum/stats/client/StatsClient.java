@@ -3,13 +3,11 @@ package ru.practicum.stats.client;
 import dto.EndpointHit;
 import dto.ViewStats;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @FeignClient(name = "stats-client", url = "${stats-server.url}")
-@Service
 public interface StatsClient {
     @GetMapping(path = "/stats")
     List<ViewStats> getStats(@RequestParam(name = "start") String start,

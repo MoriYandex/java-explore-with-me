@@ -24,4 +24,9 @@ public class StatsClientServiceImpl implements StatsClientService {
     public EndpointHit getById(Long id) {
         return statsClient.getById(id);
     }
+
+    @Override
+    public EndpointHit postHit(EndpointHit hit) {
+        return statsClient.postHit(hit);
+    }
 }

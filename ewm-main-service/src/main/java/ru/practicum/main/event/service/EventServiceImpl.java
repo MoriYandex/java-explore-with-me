@@ -159,6 +159,8 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateEventRequest<EventStateUserAction> updateEventRequest) {
         log.info("Event Service. Update user event. UserId: {}, eventId: {}, UpdateEventUserRequest: {}", userId, eventId, updateEventRequest);
+        if (updateEventRequest == null)
+            return new EventFullDto();
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
         checkEventInitiator(userId, event.getInitiator());

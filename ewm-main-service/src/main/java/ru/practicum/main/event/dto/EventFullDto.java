@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.main.category.dto.CategoryDto;
 import ru.practicum.main.event.enums.EventState;
 import ru.practicum.main.location.dto.LocationDto;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class EventFullDto {
     /**
      * Идентификатор

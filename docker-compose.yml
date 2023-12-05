@@ -18,8 +18,8 @@ services:
       - "6541:5432"
     environment:
       - POSTGRES_DB=explorewithme_stat
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
 
   ewm-service:
     build: ./ewm-main-service
@@ -40,5 +40,5 @@ services:
       - "6542:5432"
     environment:
       - POSTGRES_DB=explorewithme_main
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

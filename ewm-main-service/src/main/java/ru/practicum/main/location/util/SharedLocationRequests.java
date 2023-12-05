@@ -15,6 +15,6 @@ public class SharedLocationRequests {
         Float lat = locationDto.getLat();
         Float lon = locationDto.getLon();
         return locationRepository.findByLocation(lat, lon)
-                .orElse(locationRepository.save(LocationMapper.toEntity(locationDto)));
+                .orElse(locationRepository.save(LocationMapper.toLocation(locationDto)));
     }
 }

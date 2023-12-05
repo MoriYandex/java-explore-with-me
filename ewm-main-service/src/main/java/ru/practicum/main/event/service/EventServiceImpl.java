@@ -12,7 +12,7 @@ import ru.practicum.main.category.repository.CategoryRepository;
 import ru.practicum.main.event.dto.EventFullDto;
 import ru.practicum.main.event.dto.EventShortDto;
 import ru.practicum.main.event.dto.NewEventDto;
-import ru.practicum.main.event.dto.UpdateEventRequest;
+import ru.practicum.main.event.dto.UpdateEventDto;
 import ru.practicum.main.event.enums.EventSort;
 import ru.practicum.main.event.enums.EventState;
 import ru.practicum.main.event.enums.EventStateAdminAction;
@@ -21,6 +21,7 @@ import ru.practicum.main.event.exception.*;
 import ru.practicum.main.event.mapper.EventMapper;
 import ru.practicum.main.event.model.Event;
 import ru.practicum.main.event.repository.EventRepository;
+import ru.practicum.main.exception.ValidationException;
 import ru.practicum.main.location.mapper.LocationMapper;
 import ru.practicum.main.location.model.Location;
 import ru.practicum.main.location.repository.LocationRepository;
@@ -60,10 +61,9 @@ public class EventServiceImpl implements EventService {
     private final StatsClient statsClient;
 
     @Override
-    public EventFullDto getPublicEventById(Long eventId, HttpServletRequest request) {
-        log.info("Event Service. Get public events by eventId: {}", eventId);
+    public EventFullDto getPublicById(Long eventId, HttpServletRequest request) {
+        log.info("Get public events by eventId: {}", eventId);
         StatsClientHelper.makePublicEndpointHit(statsClient, request);
-        try{
         Map<String, Long> viewMap = StatsClientHelper.getViews(statsClient,
                 "0001-01-01 00:00:01",
                 "9999-12-31 23:59:59",
@@ -72,14 +72,12 @@ public class EventServiceImpl implements EventService {
         EventFullDto result = parseToFullDtoWithMappers(eventRepository.findByIdAndPublished(eventId).orElseThrow(() -> new EventNotFoundException(eventId)));
         result.setViews(viewMap.get(request.getRequestURI()));
         return result;
-        }catch (Exception e) {
-            throw e;}
     }
 
     @Override
     @Transactional
-    public void addEventRating(Long userId, Long eventId, Boolean isPositive) {
-        log.info("Event Service. Add event rating. UserId: {}, eventId: {}, isPositive: {}", userId, eventId, isPositive);
+    public void addRating(Long userId, Long eventId, Boolean isPositive) {
+        log.info("Add event rating. UserId: {}, eventId: {}, isPositive: {}", userId, eventId, isPositive);
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         Long initiatorId = event.getInitiator().getId();
         if (initiatorId.equals(userId))
@@ -89,19 +87,19 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public void deleteEventRating(Long userId, Long eventId) {
-        log.info("Event Service. Delete event rating. UserId: {}, eventId: {}", userId, eventId);
+    public void deleteRating(Long userId, Long eventId) {
+        log.info("Delete event rating. UserId: {}, eventId: {}", userId, eventId);
         ratingRepository.deleteByUserIdAndEventId(userId, eventId);
     }
 
     @Override
-    public List<EventFullDto> getEventsByAdmin(List<Long> users,
-                                               List<EventState> states,
-                                               List<Long> categories,
-                                               LocalDateTime rangeStart,
-                                               LocalDateTime rangeEnd,
-                                               PageRequest pageRequest) {
-        log.info("Event Service. Get events by admin. Users: {}, states: {}, categories: {}, rangeStart: {}, rangeEnd: {}, pageRequest: {}",
+    public List<EventFullDto> getByAdmin(List<Long> users,
+                                         List<EventState> states,
+                                         List<Long> categories,
+                                         LocalDateTime rangeStart,
+                                         LocalDateTime rangeEnd,
+                                         PageRequest pageRequest) {
+        log.info("Get events by admin. Users: {}, states: {}, categories: {}, rangeStart: {}, rangeEnd: {}, pageRequest: {}",
                 users, states, categories, rangeStart, rangeEnd, pageRequest);
         return eventRepository.getEventsForAdmin(users, states, categories, rangeStart, rangeEnd, pageRequest)
                 .stream().map(this::parseToFullDtoWithMappers)
@@ -110,18 +108,17 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateEventByAdmin(Long eventId, UpdateEventRequest<EventStateAdminAction> updateEventRequest) {
-        log.info("Event Service. Update event by admin. EventId: {}, eventRequest: {}", eventId, updateEventRequest);
+    public EventFullDto updateByAdmin(Long eventId, UpdateEventDto<EventStateAdminAction> updateEventDto) {
+        log.info("Update event by admin. EventId: {}, eventRequest: {}", eventId, updateEventDto);
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
         checkEventState(event.getState());
-        updateEvent(updateEventRequest, event);
+        updateEvent(updateEventDto, event);
         /* Обновление состояния */
-        Optional.ofNullable(updateEventRequest.getStateAction()).ifPresent(state -> {
+        Optional.ofNullable(updateEventDto.getStateAction()).ifPresent(state -> {
             switch (state) {
                 case PUBLISH_EVENT:
-                    if (event.getState() != EventState.PENDING) {
+                    if (event.getState() != EventState.PENDING)
                         throw new EventStatusConflictException();
-                    }
                     event.setState(EventState.PUBLISHED);
                     event.setPublishedOn(LocalDateTime.now());
                     break;
@@ -132,51 +129,51 @@ public class EventServiceImpl implements EventService {
                     throw new EventStateConflictException(state);
             }
         });
-        log.info("Event Service. Updated event by admin: {}", event);
+        log.info("Updated event by admin: {}", event);
         return parseToFullDtoWithMappers(event);
     }
 
     @Override
-    public List<EventShortDto> getUserEvents(Long userId, PageRequest pageRequest) {
+    public List<EventShortDto> getByUser(Long userId, PageRequest pageRequest) {
         checkAndReturnUser(userRepository, userId);
         List<Event> events = eventRepository.getByInitiatorIdOrderByEventDateDesc(userId, pageRequest);
-        log.info("Event Service. Get user events. User id: {}, page request: {}, events: {}", userId, pageRequest, events);
+        log.info("Get user events. User id: {}, page request: {}, events: {}", userId, pageRequest, events);
         return events.stream().map(this::parseToShortDtoWithMappers).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public EventFullDto createEvent(Long userId, NewEventDto newEventDto) {
-        log.info("Event Service. Create event. UserId: {}, NewEventDto: {}", userId, newEventDto);
+    public EventFullDto create(Long userId, NewEventDto newEventDto) {
+        log.info("Create event. UserId: {}, NewEventDto: {}", userId, newEventDto);
         checkEventDate(newEventDto.getEventDate());
         User user = checkAndReturnUser(userRepository, userId);
         Location location = SharedLocationRequests.findOrCreateLocation(locationRepository, newEventDto.getLocation());
         Category category = checkAndReturnCategory(categoryRepository, newEventDto.getCategory());
-        log.info("Event Service. Create event. Found category: {}", category);
-        Event event = EventMapper.toEntity(newEventDto, category, location, user);
+        log.info("Create event. Found category: {}", category);
+        Event event = EventMapper.toEvent(newEventDto, category, location, user);
         return parseToFullDtoWithMappers(eventRepository.save(event));
     }
 
     @Override
-    public EventFullDto getUserEventById(Long userId, Long eventId) {
-        log.info("Event Service. Get user event By Id. UserId: {}, eventId: {}", userId, eventId);
+    public EventFullDto getByUserById(Long userId, Long eventId) {
+        log.info("Get user event By Id. UserId: {}, eventId: {}", userId, eventId);
         return parseToFullDtoWithMappers(eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId)));
     }
 
     @Override
     @Transactional
-    public EventFullDto updateUserEvent(Long userId, Long eventId, UpdateEventRequest<EventStateUserAction> updateEventRequest) {
-        log.info("Event Service. Update user event. UserId: {}, eventId: {}, UpdateEventUserRequest: {}", userId, eventId, updateEventRequest);
-        if (updateEventRequest == null)
+    public EventFullDto updateByUser(Long userId, Long eventId, UpdateEventDto<EventStateUserAction> updateEventDto) {
+        log.info("Update user event. UserId: {}, eventId: {}, UpdateEventUserRequest: {}", userId, eventId, updateEventDto);
+        if (updateEventDto == null)
             return new EventFullDto();
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
         checkEventInitiator(userId, event.getInitiator());
         checkEventState(event.getState());
-        updateEvent(updateEventRequest, event);
+        updateEvent(updateEventDto, event);
         /* Обновление состояния */
-        Optional.ofNullable(updateEventRequest.getStateAction()).ifPresent(state -> {
+        Optional.ofNullable(updateEventDto.getStateAction()).ifPresent(state -> {
             switch (state) {
                 case CANCEL_REVIEW:
                     event.setState(EventState.CANCELED);
@@ -189,23 +186,25 @@ public class EventServiceImpl implements EventService {
                     throw new EventStateConflictException(state);
             }
         });
-        log.info("Event Service. Updated event by user: {}", event);
+        log.info("Updated event by user: {}", event);
         return parseToFullDtoWithMappers(event);
     }
 
     @Override
-    public List<EventShortDto> getPublicEvents(String text,
-                                               List<Long> categories,
-                                               Boolean paid,
-                                               LocalDateTime rangeStart,
-                                               LocalDateTime rangeEnd,
-                                               Boolean onlyAvailable,
-                                               EventSort sort,
-                                               Integer from,
-                                               Integer size,
-                                               HttpServletRequest request) {
-        log.info("Event Service. Get public events. Text: {}, categories: {}, paid: {}, rangeStart: {}, rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}",
+    public List<EventShortDto> getPublic(String text,
+                                         List<Long> categories,
+                                         Boolean paid,
+                                         LocalDateTime rangeStart,
+                                         LocalDateTime rangeEnd,
+                                         Boolean onlyAvailable,
+                                         EventSort sort,
+                                         Integer from,
+                                         Integer size,
+                                         HttpServletRequest request) {
+        log.info("Get public events. Text: {}, categories: {}, paid: {}, rangeStart: {}, rangeEnd: {}, onlyAvailable: {}, sort: {}, from: {}, size: {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        if (rangeEnd.isBefore(rangeStart))
+            throw new ValidationException("Дата начала диапазона не может быть позднее даты окончания!");
         StatsClientHelper.makePublicEndpointHit(statsClient, request);
         PageRequest pageRequest;
         List<Event> events;
@@ -298,7 +297,7 @@ public class EventServiceImpl implements EventService {
      * @return {@link EventShortDto}
      */
     private EventShortDto parseToShortDtoWithMappers(Event event) {
-        return EventMapper.toShortDto(event, CategoryMapper.toDto(event.getCategory()), UserMapper.toShortDto(event.getInitiator()));
+        return EventMapper.toEventShortDto(event, CategoryMapper.toCategoryDto(event.getCategory()), UserMapper.toUserShortDto(event.getInitiator()));
     }
 
     /**
@@ -308,10 +307,10 @@ public class EventServiceImpl implements EventService {
      * @return {@link EventFullDto}
      */
     private EventFullDto parseToFullDtoWithMappers(Event event) {
-        return EventMapper.toDto(eventRepository.save(event),
-                CategoryMapper.toDto(event.getCategory()),
-                UserMapper.toShortDto(event.getInitiator()),
-                LocationMapper.toDto(event.getLocation()));
+        return EventMapper.toEventFullDto(eventRepository.save(event),
+                CategoryMapper.toCategoryDto(event.getCategory()),
+                UserMapper.toUserShortDto(event.getInitiator()),
+                LocationMapper.toLocationDto(event.getLocation()));
     }
 
     /**
@@ -341,32 +340,32 @@ public class EventServiceImpl implements EventService {
     /**
      * Вынес одинаковые для пользователя и админа поля для обновления
      *
-     * @param updateEventRequest новые значения для события
-     * @param event              событие для записи значений
+     * @param updateEventDto новые значения для события
+     * @param event          событие для записи значений
      */
-    private void updateEvent(UpdateEventRequest<?> updateEventRequest, Event event) {
+    private void updateEvent(UpdateEventDto<?> updateEventDto, Event event) {
         /* Обновление аннотации */
-        Optional.ofNullable(updateEventRequest.getAnnotation()).ifPresent(event::setAnnotation);
+        Optional.ofNullable(updateEventDto.getAnnotation()).ifPresent(event::setAnnotation);
         /* Обновление категории */
-        Optional.ofNullable(updateEventRequest.getCategory())
+        Optional.ofNullable(updateEventDto.getCategory())
                 .ifPresent(categoryId -> event.setCategory(checkAndReturnCategory(categoryRepository, categoryId)));
         /* Обновление описания */
-        Optional.ofNullable(updateEventRequest.getDescription()).ifPresent(event::setDescription);
+        Optional.ofNullable(updateEventDto.getDescription()).ifPresent(event::setDescription);
         /* Обновление даты события */
-        Optional.ofNullable(updateEventRequest.getEventDate()).ifPresent(eventDate -> {
+        Optional.ofNullable(updateEventDto.getEventDate()).ifPresent(eventDate -> {
             checkEventDate(eventDate);
             event.setEventDate(eventDate);
         });
         /* Обновление локации */
-        Optional.ofNullable(updateEventRequest.getLocation())
+        Optional.ofNullable(updateEventDto.getLocation())
                 .ifPresent(locationDto -> event.setLocation(SharedLocationRequests.findOrCreateLocation(locationRepository, locationDto)));
         /* Обновление платности мероприятия */
-        Optional.ofNullable(updateEventRequest.getPaid()).ifPresent(event::setPaid);
+        Optional.ofNullable(updateEventDto.getPaid()).ifPresent(event::setPaid);
         /* Обновление лимита посетителей */
-        Optional.ofNullable(updateEventRequest.getParticipantLimit()).ifPresent(event::setParticipantLimit);
+        Optional.ofNullable(updateEventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         /* Обновление статуса модерации */
-        Optional.ofNullable(updateEventRequest.getRequestModeration()).ifPresent(event::setRequestModeration);
+        Optional.ofNullable(updateEventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         /* Обновление заголовка */
-        Optional.ofNullable(updateEventRequest.getTitle()).ifPresent(event::setTitle);
+        Optional.ofNullable(updateEventDto.getTitle()).ifPresent(event::setTitle);
     }
 }

@@ -14,7 +14,6 @@ import ru.practicum.stats.repository.HitRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,18 +31,17 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @Override
-    public List<ViewStats> get(String start, String end, String[] uris, Boolean unique) {
+    public List<ViewStats> get(String start, String end, List<String> uris, Boolean unique) {
         log.info("Получение статистики по параметрам: start={}, end={}, uris={}, unique={}", start, end, uris, unique);
         try {
             LocalDateTime startDate = LocalDateTime.parse(start, EndpointHitMapper.DATE_TIME_FORMATTER);
             LocalDateTime endDate = LocalDateTime.parse(end, EndpointHitMapper.DATE_TIME_FORMATTER);
-            List<String> urisList = (uris != null && uris.length > 0) ? Arrays.asList(uris) : null;
             if (unique == null || !unique)
-                return hitRepository.getStats(startDate, endDate, urisList)
+                return hitRepository.getStats(startDate, endDate, uris)
                         .stream().map(StatMapper::toViewStats)
                         .collect(Collectors.toList());
             else
-                return hitRepository.getUniqueStats(startDate, endDate, urisList)
+                return hitRepository.getUniqueStats(startDate, endDate, uris)
                         .stream().map(StatMapper::toViewStats)
                         .collect(Collectors.toList());
         } catch (DateTimeParseException e) {

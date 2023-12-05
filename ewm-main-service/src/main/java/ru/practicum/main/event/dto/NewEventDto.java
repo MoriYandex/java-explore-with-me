@@ -42,6 +42,7 @@ public class NewEventDto {
      */
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Future
     private LocalDateTime eventDate;
     /**
      * Локация проведения события {@link LocationDto}

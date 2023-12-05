@@ -4,7 +4,7 @@ import org.springframework.data.domain.PageRequest;
 import ru.practicum.main.event.dto.EventFullDto;
 import ru.practicum.main.event.dto.EventShortDto;
 import ru.practicum.main.event.dto.NewEventDto;
-import ru.practicum.main.event.dto.UpdateEventRequest;
+import ru.practicum.main.event.dto.UpdateEventDto;
 import ru.practicum.main.event.enums.EventSort;
 import ru.practicum.main.event.enums.EventState;
 import ru.practicum.main.event.enums.EventStateAdminAction;
@@ -15,31 +15,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService {
-    List<EventShortDto> getUserEvents(Long userId, PageRequest pageRequest);
+    List<EventShortDto> getByUser(Long userId, PageRequest pageRequest);
 
-    EventFullDto createEvent(Long userId, NewEventDto newEventDto);
+    EventFullDto create(Long userId, NewEventDto newEventDto);
 
-    EventFullDto getUserEventById(Long userId, Long eventId);
+    EventFullDto getByUserById(Long userId, Long eventId);
 
-    EventFullDto updateUserEvent(Long userId, Long eventId, UpdateEventRequest<EventStateUserAction> updateEventRequest);
+    EventFullDto updateByUser(Long userId, Long eventId, UpdateEventDto<EventStateUserAction> updateEventDto);
 
-    List<EventFullDto> getEventsByAdmin(List<Long> users,
-                                        List<EventState> states,
-                                        List<Long> categories,
-                                        LocalDateTime rangeStart,
-                                        LocalDateTime rangeEnd,
-                                        PageRequest pageRequest);
+    List<EventFullDto> getByAdmin(List<Long> users,
+                                  List<EventState> states,
+                                  List<Long> categories,
+                                  LocalDateTime rangeStart,
+                                  LocalDateTime rangeEnd,
+                                  PageRequest pageRequest);
 
-    EventFullDto updateEventByAdmin(Long eventId, UpdateEventRequest<EventStateAdminAction> updateEventRequest);
+    EventFullDto updateByAdmin(Long eventId, UpdateEventDto<EventStateAdminAction> updateEventDto);
 
-    List<EventShortDto> getPublicEvents(
+    List<EventShortDto> getPublic(
             String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd,
             Boolean onlyAvailable, EventSort sort, Integer from, Integer size, HttpServletRequest request
     );
 
-    EventFullDto getPublicEventById(Long id, HttpServletRequest request);
+    EventFullDto getPublicById(Long id, HttpServletRequest request);
 
-    void addEventRating(Long userId, Long eventId, Boolean isPositive);
+    void addRating(Long userId, Long eventId, Boolean isPositive);
 
-    void deleteEventRating(Long userId, Long eventId);
+    void deleteRating(Long userId, Long eventId);
 }

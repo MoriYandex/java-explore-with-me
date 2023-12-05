@@ -1,41 +1,20 @@
 package ru.practicum.stats;
 
 import dto.EndpointHit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.util.DefaultUriBuilderFactory;
+import dto.ViewStats;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
-@Service
-public class StatsClient extends BaseClient {
-    @Autowired
-    public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
-        super(
-                builder
-                        .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
-                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
-                        .build()
-        );
-    }
+@FeignClient(name = "stats-client", url = "${stats-server.url}")
+public interface StatsClient {
+    @GetMapping(path = "/stats")
+    List<ViewStats> getStats(@RequestParam(name = "start") String start,
+                             @RequestParam(name = "end") String end,
+                             @RequestParam(name = "uri", required = false) List<String> uris,
+                             @RequestParam(name = "unique", required = false, defaultValue = "false") Boolean unique);
 
-    public ResponseEntity<Object> postHit(EndpointHit endpointHit) {
-        return post("/hit", endpointHit);
-    }
-
-    public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
-        Map<String, Object> parameters = Map.of(
-                "uris", String.join(",", uris),
-                "unique", unique,
-                "start", start,
-                "end", end
-        );
-
-        return get("/stats?start={start}&end={end}&uris={uris}&unique={unique}", parameters);
-    }
+    @PostMapping(path = "/hit")
+    EndpointHit postHit(@RequestBody EndpointHit hit);
 }

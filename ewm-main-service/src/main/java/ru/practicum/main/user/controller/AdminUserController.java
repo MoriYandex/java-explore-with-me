@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.main.user.dto.NewUserRequestDto;
+import ru.practicum.main.user.dto.NewUserDto;
 import ru.practicum.main.user.dto.UserDto;
 import ru.practicum.main.user.service.UserService;
 
@@ -24,21 +24,21 @@ public class AdminUserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getUsers(@RequestParam(required = false) List<Long> ids,
-                                  @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
-                                  @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
-        return userService.getUsers(ids, PageRequest.of(from, size));
+    public List<UserDto> get(@RequestParam(required = false) List<Long> ids,
+                             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
+                             @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
+        return userService.get(ids, PageRequest.of(from, size));
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public UserDto createUser(@RequestBody @Valid NewUserRequestDto newUserRequestDto) {
-        return userService.createUser(newUserRequestDto);
+    public UserDto create(@RequestBody @Valid NewUserDto newUserDto) {
+        return userService.create(newUserDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    public void delete(@PathVariable Long userId) {
+        userService.delete(userId);
     }
 }

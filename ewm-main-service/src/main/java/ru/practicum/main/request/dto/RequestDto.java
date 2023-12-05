@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Value
 @Builder
 @AllArgsConstructor
-public class ParticipationRequestDto implements Serializable {
+public class RequestDto implements Serializable {
     /**
      * Идентификатор заявки
      */

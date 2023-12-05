@@ -3,9 +3,9 @@ package ru.practicum.main.request.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.main.request.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.main.request.dto.EventRequestStatusUpdateResult;
-import ru.practicum.main.request.dto.ParticipationRequestDto;
+import ru.practicum.main.request.dto.RequestDto;
+import ru.practicum.main.request.dto.RequestsListsDto;
+import ru.practicum.main.request.dto.UpdateRequestDto;
 import ru.practicum.main.request.service.RequestService;
 
 import java.util.List;
@@ -17,30 +17,30 @@ public class PrivateRequestController {
     private final RequestService requestService;
 
     @GetMapping("/requests")
-    List<ParticipationRequestDto> getUserRequests(@PathVariable Long userId) {
-        return requestService.getUserRequests(userId);
+    List<RequestDto> get(@PathVariable Long userId) {
+        return requestService.get(userId);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/requests")
-    ParticipationRequestDto createUserRequest(@PathVariable Long userId, @RequestParam Long eventId) {
-        return requestService.createUserRequest(userId, eventId);
+    RequestDto create(@PathVariable Long userId, @RequestParam Long eventId) {
+        return requestService.create(userId, eventId);
     }
 
     @PatchMapping("/requests/{requestId}/cancel")
-    ParticipationRequestDto cancelUserRequest(@PathVariable Long userId, @PathVariable Long requestId) {
-        return requestService.cancelUserRequest(userId, requestId);
+    RequestDto cancel(@PathVariable Long userId, @PathVariable Long requestId) {
+        return requestService.cancel(userId, requestId);
     }
 
     @GetMapping("/events/{eventId}/requests")
-    public List<ParticipationRequestDto> getUserEventRequests(@PathVariable Long userId, @PathVariable Long eventId) {
-        return requestService.getUserEventRequests(userId, eventId);
+    public List<RequestDto> getByEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+        return requestService.getByEvent(userId, eventId);
     }
 
     @PatchMapping("/events/{eventId}/requests")
-    public EventRequestStatusUpdateResult updateUserEventRequest(@PathVariable Long userId,
-                                                                 @PathVariable Long eventId,
-                                                                 @RequestBody EventRequestStatusUpdateRequest eventRequestStatusUpdateRequest) {
-        return requestService.updateUserEventRequest(userId, eventId, eventRequestStatusUpdateRequest);
+    public RequestsListsDto updateByEvent(@PathVariable Long userId,
+                                          @PathVariable Long eventId,
+                                          @RequestBody UpdateRequestDto updateRequestDto) {
+        return requestService.updateByEvent(userId, eventId, updateRequestDto);
     }
 }

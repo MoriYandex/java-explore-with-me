@@ -21,6 +21,6 @@ public class NewCategoryDto implements Serializable {
      * Название категории
      */
     @NotBlank
-    @Size(min = 1, max = 512)
+    @Size(min = 1, max = 50)
     private String name;
 }

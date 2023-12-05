@@ -19,14 +19,14 @@ public class PublicCompilationController {
     private final CompilationsService compilationsService;
 
     @GetMapping
-    public List<CompilationDto> getCompilations(@RequestParam(required = false, defaultValue = "false") Boolean pinned,
-                                                @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
-                                                @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
-        return compilationsService.getCompilations(pinned, PageRequest.of(from, size));
+    public List<CompilationDto> get(@RequestParam(required = false, defaultValue = "false") Boolean pinned,
+                                    @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
+                                    @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
+        return compilationsService.get(pinned, PageRequest.of(from, size));
     }
 
     @GetMapping("/{id}")
-    public CompilationDto getCompilationById(@PathVariable Long id) {
-        return compilationsService.getCompilationById(id);
+    public CompilationDto getById(@PathVariable Long id) {
+        return compilationsService.getById(id);
     }
 }

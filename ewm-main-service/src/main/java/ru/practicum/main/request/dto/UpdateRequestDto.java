@@ -13,7 +13,7 @@ import java.util.List;
 @Value
 @Builder
 @AllArgsConstructor
-public class EventRequestStatusUpdateRequest {
+public class UpdateRequestDto {
     /**
      * Новый статус запроса на участие в событии текущего пользователя
      */

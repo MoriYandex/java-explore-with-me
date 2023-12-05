@@ -12,7 +12,7 @@ import java.util.Set;
 
 @UtilityClass
 public class CompilationMapper {
-    public static Compilation toEntity(NewCompilationDto newCompilationDto, Set<Event> events) {
+    public static Compilation toCompilation(NewCompilationDto newCompilationDto, Set<Event> events) {
         return Compilation.builder()
                 .events(events)
                 .title(newCompilationDto.getTitle())
@@ -20,7 +20,7 @@ public class CompilationMapper {
                 .build();
     }
 
-    public static CompilationDto toDto(Compilation compilation, List<EventShortDto> events) {
+    public static CompilationDto toCompilationDto(Compilation compilation, List<EventShortDto> events) {
         return CompilationDto.builder()
                 .id(compilation.getId())
                 .pinned(compilation.getPinned())

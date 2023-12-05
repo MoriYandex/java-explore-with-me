@@ -12,13 +12,13 @@ import java.util.List;
 @Value
 @Builder
 @AllArgsConstructor
-public class EventRequestStatusUpdateResult {
+public class RequestsListsDto {
     /**
      * Подтвержденные заявки
      */
-    List<ParticipationRequestDto> confirmedRequests;
+    List<RequestDto> confirmedRequests;
     /**
      * Отклоненные заявки
      */
-    List<ParticipationRequestDto> rejectedRequests;
+    List<RequestDto> rejectedRequests;
 }

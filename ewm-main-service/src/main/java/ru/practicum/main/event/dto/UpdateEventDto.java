@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
 import ru.practicum.main.location.dto.LocationDto;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @Builder
 @Jacksonized
 @AllArgsConstructor
-public class UpdateEventRequest<T> {
+public class UpdateEventDto<T> {
     /**
      * Новая аннотация
      */
@@ -38,6 +39,7 @@ public class UpdateEventRequest<T> {
      * Новые дата и время на которые намечено событие.
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @Future
     private LocalDateTime eventDate;
     /**
      * Новая локация {@link LocationDto}

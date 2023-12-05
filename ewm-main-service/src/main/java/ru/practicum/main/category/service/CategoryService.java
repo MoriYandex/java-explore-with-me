@@ -7,13 +7,13 @@ import ru.practicum.main.category.dto.NewCategoryDto;
 import java.util.List;
 
 public interface CategoryService {
-    List<CategoryDto> getCategories(PageRequest pageRequest);
+    List<CategoryDto> get(PageRequest pageRequest);
 
-    CategoryDto getCategoryById(Long categoryId);
+    CategoryDto getById(Long categoryId);
 
-    CategoryDto createCategory(NewCategoryDto newCategoryDto);
+    CategoryDto create(NewCategoryDto newCategoryDto);
 
-    void deleteCategory(Long categoryId);
+    void delete(Long categoryId);
 
-    CategoryDto updateCategory(Long categoryId, NewCategoryDto newCategoryDto);
+    CategoryDto update(Long categoryId, NewCategoryDto newCategoryDto);
 }

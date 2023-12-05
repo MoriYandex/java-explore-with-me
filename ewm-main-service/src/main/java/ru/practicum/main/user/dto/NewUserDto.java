@@ -16,18 +16,18 @@ import java.io.Serializable;
 @Data
 @Builder
 @AllArgsConstructor
-public class NewUserRequestDto implements Serializable {
+public class NewUserDto implements Serializable {
     /**
      * Почтовый адрес
      */
     @NotNull
     @Email
-    @Size(min = 1, max = 256)
+    @Size(min = 6, max = 254)
     private String email;
     /**
      * Имя
      */
     @NotBlank
-    @Size(min = 1, max = 256)
+    @Size(min = 2, max = 250)
     private String name;
 }

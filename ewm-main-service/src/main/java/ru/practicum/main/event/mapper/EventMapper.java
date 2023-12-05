@@ -20,7 +20,7 @@ import java.util.Set;
 
 @UtilityClass
 public class EventMapper {
-    public static Event toEntity(NewEventDto newEventDto, Category category, Location location, User initiator) {
+    public static Event toEvent(NewEventDto newEventDto, Category category, Location location, User initiator) {
         return Event.builder()
                 .annotation(newEventDto.getAnnotation())
                 .category(category)
@@ -37,7 +37,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventShortDto toShortDto(Event event, CategoryDto category, UserShortDto initiator) {
+    public static EventShortDto toEventShortDto(Event event, CategoryDto category, UserShortDto initiator) {
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -51,7 +51,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventFullDto toDto(Event event, CategoryDto category, UserShortDto initiator, LocationDto location) {
+    public static EventFullDto toEventFullDto(Event event, CategoryDto category, UserShortDto initiator, LocationDto location) {
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())

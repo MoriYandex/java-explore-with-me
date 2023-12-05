@@ -30,29 +30,30 @@ public class CategoryServiceImpl implements CategoryService {
     private final EventRepository eventRepository;
 
     @Override
-    public List<CategoryDto> getCategories(PageRequest pageRequest) {
+    public List<CategoryDto> get(PageRequest pageRequest) {
         List<Category> categories = categoryRepository.findAll(pageRequest).getContent();
-        log.info("Category Service. Get categories. PageRequest: {}, categories: {}", pageRequest, categories);
-        return categories.stream().map(CategoryMapper::toDto).collect(Collectors.toList());
+        log.info("Get categories. PageRequest: {}, categories: {}", pageRequest, categories);
+        return categories.stream().map(CategoryMapper::toCategoryDto).collect(Collectors.toList());
     }
 
     @Override
-    public CategoryDto getCategoryById(Long categoryId) {
-        return CategoryMapper.toDto(SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId));
-    }
-
-    @Override
-    @Transactional
-    public CategoryDto createCategory(NewCategoryDto newCategoryDto) {
-        log.info("Category Service. Create category by id. NewCategoryDto: {}", newCategoryDto);
-        Category category = categoryRepository.save(CategoryMapper.toEntity(newCategoryDto));
-        return CategoryMapper.toDto(category);
+    public CategoryDto getById(Long categoryId) {
+        log.info("Get category by id. CategoryId: {}", categoryId);
+        return CategoryMapper.toCategoryDto(SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId));
     }
 
     @Override
     @Transactional
-    public void deleteCategory(Long categoryId) {
-        log.info("Category Service. Delete category by id. CategoryId: {}", categoryId);
+    public CategoryDto create(NewCategoryDto newCategoryDto) {
+        log.info("Create category by id. NewCategoryDto: {}", newCategoryDto);
+        Category category = categoryRepository.save(CategoryMapper.toCategory(newCategoryDto));
+        return CategoryMapper.toCategoryDto(category);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long categoryId) {
+        log.info("Delete category by id. CategoryId: {}", categoryId);
         Category category = SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId);
         if (eventRepository.countByCategoryId(categoryId) > 0L) {
             throw new CategoryConflictException();
@@ -62,10 +63,10 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryDto updateCategory(Long categoryId, NewCategoryDto newCategoryDto) {
-        log.info("Category Service. Update category. CategoryId: {}, NewCategoryDto: {}", categoryId, newCategoryDto);
+    public CategoryDto update(Long categoryId, NewCategoryDto newCategoryDto) {
+        log.info("Update category. CategoryId: {}, NewCategoryDto: {}", categoryId, newCategoryDto);
         Category category = SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId);
         category.setName(newCategoryDto.getName());
-        return CategoryMapper.toDto(category);
+        return CategoryMapper.toCategoryDto(category);
     }
 }

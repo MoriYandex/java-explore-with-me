@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.event.dto.EventFullDto;
 import ru.practicum.main.event.dto.EventShortDto;
 import ru.practicum.main.event.dto.NewEventDto;
-import ru.practicum.main.event.dto.UpdateEventRequest;
+import ru.practicum.main.event.dto.UpdateEventDto;
 import ru.practicum.main.event.enums.EventStateUserAction;
 import ru.practicum.main.event.service.EventService;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -24,43 +25,43 @@ public class PrivateEventController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventShortDto> getUserEvents(@PathVariable Long userId,
-                                             @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
-                                             @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
-        return eventService.getUserEvents(userId, PageRequest.of(from, size));
+    public List<EventShortDto> getByUser(@PathVariable Long userId,
+                                         @RequestParam(defaultValue = "0", required = false) @PositiveOrZero Integer from,
+                                         @RequestParam(defaultValue = "10", required = false) @Positive Integer size) {
+        return eventService.getByUser(userId, PageRequest.of(from, size));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public EventFullDto createEvent(@PathVariable Long userId,
-                                    @RequestBody @Validated NewEventDto newEventDto) {
-        return eventService.createEvent(userId, newEventDto);
+    public EventFullDto create(@PathVariable Long userId,
+                               @RequestBody @Validated NewEventDto newEventDto) {
+        return eventService.create(userId, newEventDto);
     }
 
     @GetMapping("/{eventId}")
-    public EventFullDto getUserEventById(@PathVariable Long userId,
-                                         @PathVariable Long eventId) {
-        return eventService.getUserEventById(userId, eventId);
+    public EventFullDto getByUserById(@PathVariable Long userId,
+                                      @PathVariable Long eventId) {
+        return eventService.getByUserById(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
-    public EventFullDto updateUserEvent(@PathVariable Long userId,
-                                        @PathVariable Long eventId,
-                                        @RequestBody UpdateEventRequest<EventStateUserAction> updateEventRequest) {
-        return eventService.updateUserEvent(userId, eventId, updateEventRequest);
+    public EventFullDto updateByUser(@PathVariable Long userId,
+                                     @PathVariable Long eventId,
+                                     @RequestBody @Valid UpdateEventDto<EventStateUserAction> updateEventDto) {
+        return eventService.updateByUser(userId, eventId, updateEventDto);
     }
 
     @PutMapping("/{eventId}/rating")
-    public void addEventRating(@PathVariable Long userId,
-                               @PathVariable Long eventId,
-                               @RequestParam Boolean isPositive) {
-        eventService.addEventRating(userId, eventId, isPositive);
+    public void addRating(@PathVariable Long userId,
+                          @PathVariable Long eventId,
+                          @RequestParam Boolean isPositive) {
+        eventService.addRating(userId, eventId, isPositive);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{eventId}/rating")
-    public void deleteEventRating(@PathVariable Long userId,
-                                  @PathVariable Long eventId) {
-        eventService.deleteEventRating(userId, eventId);
+    public void deleteRating(@PathVariable Long userId,
+                             @PathVariable Long eventId) {
+        eventService.deleteRating(userId, eventId);
     }
 }

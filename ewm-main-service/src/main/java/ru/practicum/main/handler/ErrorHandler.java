@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.main.exception.ConflictException;
 import ru.practicum.main.exception.NotFoundException;
+import ru.practicum.main.exception.ValidationException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -56,13 +57,23 @@ public class ErrorHandler {
                 .build();
     }
 
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(ValidationException e) {
+        String message = e.getMessage();
+        log.error(e.getMessage());
+        return ErrorResponse.builder()
+                .message(message)
+                .status(HttpStatus.BAD_REQUEST.toString())
+                .reason("Field validation error")
+                .build();
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequest(MissingServletRequestParameterException e) {
         String message = e.getMessage();
-
         log.error(e.getMessage());
-
         return ErrorResponse.builder()
                 .message(message)
                 .status(HttpStatus.BAD_REQUEST.toString())
@@ -74,9 +85,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleBadRequest(DataIntegrityViolationException e) {
         String message = e.getMessage();
-
         log.error(e.getMessage());
-
         return ErrorResponse.builder()
                 .message(message)
                 .status(HttpStatus.CONFLICT.toString())
@@ -88,9 +97,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(NotFoundException e) {
         String message = e.getMessage();
-
         log.error(e.getMessage());
-
         return ErrorResponse.builder()
                 .message(message)
                 .status(HttpStatus.NOT_FOUND.toString())
@@ -103,10 +110,8 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerError(Throwable e) {
         String message = e.getMessage();
-
         log.error(message);
         log.error(String.valueOf(e.getClass()));
-
         return ErrorResponse.builder()
                 .errors(Collections.singletonList(getStackTrace(e)))
                 .message(message)

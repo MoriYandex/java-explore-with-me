@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.main.event.dto.EventFullDto;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class UpdateCompilationRequestDto implements Serializable {
+public class UpdateCompilationDto implements Serializable {
     /**
      * Список идентификаторов ${@link EventFullDto}
      */
@@ -27,5 +28,6 @@ public class UpdateCompilationRequestDto implements Serializable {
     /**
      * Заголовок подборки
      */
+    @Size(min = 1, max = 50)
     private String title;
 }

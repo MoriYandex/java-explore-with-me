@@ -36,6 +36,8 @@ public class StatsServiceImpl implements StatsService {
         try {
             LocalDateTime startDate = LocalDateTime.parse(start, EndpointHitMapper.DATE_TIME_FORMATTER);
             LocalDateTime endDate = LocalDateTime.parse(end, EndpointHitMapper.DATE_TIME_FORMATTER);
+            if (endDate.isBefore(startDate))
+                throw new ValidationException("Дата начала диапазона должна быть ранее даты окончания");
             if (unique == null || !unique)
                 return hitRepository.getStats(startDate, endDate, uris)
                         .stream().map(StatMapper::toViewStats)

@@ -1,6 +1,5 @@
 package ru.practicum.main.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +24,7 @@ public class EventShortDto implements Serializable {
     /**
      * {@link CategoryDto}
      */
-    private transient CategoryDto category;
+    private CategoryDto category;
     /**
      * Количество одобренных заявок на участие в данном событии
      */
@@ -33,12 +32,11 @@ public class EventShortDto implements Serializable {
     /**
      * Дата и время на которые намечено событие
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     /**
      * Инициатор события {@link UserShortDto}
      */
-    private transient UserShortDto initiator;
+    private UserShortDto initiator;
     /**
      * Нужно ли оплачивать участие
      */

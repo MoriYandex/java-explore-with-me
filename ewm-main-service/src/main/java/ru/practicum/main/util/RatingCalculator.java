@@ -1,4 +1,4 @@
-package ru.practicum.main.rating.util;
+package ru.practicum.main.util;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.main.rating.model.Rating;

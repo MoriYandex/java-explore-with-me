@@ -22,10 +22,10 @@ import ru.practicum.main.event.mapper.EventMapper;
 import ru.practicum.main.event.model.Event;
 import ru.practicum.main.event.repository.EventRepository;
 import ru.practicum.main.exception.ValidationException;
+import ru.practicum.main.location.dto.LocationDto;
 import ru.practicum.main.location.mapper.LocationMapper;
 import ru.practicum.main.location.model.Location;
 import ru.practicum.main.location.repository.LocationRepository;
-import ru.practicum.main.location.util.SharedLocationRequests;
 import ru.practicum.main.rating.model.Rating;
 import ru.practicum.main.rating.repository.RatingRepository;
 import ru.practicum.main.user.mapper.UserMapper;
@@ -43,9 +43,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.practicum.main.category.util.SharedCategoryRequests.checkAndReturnCategory;
-import static ru.practicum.main.rating.util.RatingCalculator.calculateRating;
-import static ru.practicum.main.user.util.SharedUserRequests.checkAndReturnUser;
+import static ru.practicum.main.util.RatingCalculator.calculateRating;
+import static ru.practicum.main.util.SharedRequests.checkAndReturnCategory;
+import static ru.practicum.main.util.SharedRequests.checkAndReturnUser;
 
 @Slf4j
 @Service
@@ -147,7 +147,7 @@ public class EventServiceImpl implements EventService {
         log.info("Create event. UserId: {}, NewEventDto: {}", userId, newEventDto);
         checkEventDate(newEventDto.getEventDate());
         User user = checkAndReturnUser(userRepository, userId);
-        Location location = SharedLocationRequests.findOrCreateLocation(locationRepository, newEventDto.getLocation());
+        Location location = findOrCreateLocation(newEventDto.getLocation());
         Category category = checkAndReturnCategory(categoryRepository, newEventDto.getCategory());
         log.info("Create event. Found category: {}", category);
         Event event = EventMapper.toEvent(newEventDto, category, location, user);
@@ -358,7 +358,7 @@ public class EventServiceImpl implements EventService {
         });
         /* Обновление локации */
         Optional.ofNullable(updateEventDto.getLocation())
-                .ifPresent(locationDto -> event.setLocation(SharedLocationRequests.findOrCreateLocation(locationRepository, locationDto)));
+                .ifPresent(locationDto -> event.setLocation(findOrCreateLocation(locationDto)));
         /* Обновление платности мероприятия */
         Optional.ofNullable(updateEventDto.getPaid()).ifPresent(event::setPaid);
         /* Обновление лимита посетителей */
@@ -367,5 +367,13 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(updateEventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         /* Обновление заголовка */
         Optional.ofNullable(updateEventDto.getTitle()).ifPresent(event::setTitle);
+    }
+
+    private Location findOrCreateLocation(LocationDto locationDto) {
+        log.info("SharedLocationRequests find or create location. Location: {}", locationDto);
+        Float lat = locationDto.getLat();
+        Float lon = locationDto.getLon();
+        return locationRepository.findByLocation(lat, lon)
+                .orElse(locationRepository.save(LocationMapper.toLocation(locationDto)));
     }
 }

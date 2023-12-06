@@ -22,7 +22,7 @@ public class CompilationDto implements Serializable {
     /**
      * Список {@link EventShortDto}
      */
-    transient List<EventShortDto> events;
+    List<EventShortDto> events;
     /**
      * Закреплена ли подборка на главной странице сайта
      */

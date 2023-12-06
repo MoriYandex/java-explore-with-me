@@ -1,6 +1,5 @@
 package ru.practicum.main.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,7 +35,6 @@ public class EventFullDto {
     /**
      * Дата и время создания события
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
     /**
      * Полное описание события
@@ -45,7 +43,6 @@ public class EventFullDto {
     /**
      * Дата и время на которые намечено событие
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     /**
      * Инициатор события {@link UserShortDto}
@@ -66,7 +63,6 @@ public class EventFullDto {
     /**
      * Дата и время публикации события
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
     /**
      * Нужна ли пре-модерация заявок на участие

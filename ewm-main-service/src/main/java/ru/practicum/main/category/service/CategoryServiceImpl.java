@@ -12,11 +12,12 @@ import ru.practicum.main.category.exception.CategoryConflictException;
 import ru.practicum.main.category.mapper.CategoryMapper;
 import ru.practicum.main.category.model.Category;
 import ru.practicum.main.category.repository.CategoryRepository;
-import ru.practicum.main.category.util.SharedCategoryRequests;
 import ru.practicum.main.event.repository.EventRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.main.util.SharedRequests.checkAndReturnCategory;
 
 @Slf4j
 @Service
@@ -39,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getById(Long categoryId) {
         log.info("Get category by id. CategoryId: {}", categoryId);
-        return CategoryMapper.toCategoryDto(SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId));
+        return CategoryMapper.toCategoryDto(checkAndReturnCategory(categoryRepository, categoryId));
     }
 
     @Override
@@ -54,9 +55,9 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void delete(Long categoryId) {
         log.info("Delete category by id. CategoryId: {}", categoryId);
-        Category category = SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId);
+        Category category = checkAndReturnCategory(categoryRepository, categoryId);
         if (eventRepository.countByCategoryId(categoryId) > 0L) {
-            throw new CategoryConflictException();
+            throw new CategoryConflictException(categoryId);
         }
         categoryRepository.delete(category);
     }
@@ -65,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryDto update(Long categoryId, NewCategoryDto newCategoryDto) {
         log.info("Update category. CategoryId: {}, NewCategoryDto: {}", categoryId, newCategoryDto);
-        Category category = SharedCategoryRequests.checkAndReturnCategory(categoryRepository, categoryId);
+        Category category = checkAndReturnCategory(categoryRepository, categoryId);
         category.setName(newCategoryDto.getName());
         return CategoryMapper.toCategoryDto(category);
     }

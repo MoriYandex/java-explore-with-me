@@ -8,6 +8,7 @@ import ru.practicum.main.user.model.User;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -31,4 +32,14 @@ public class Request implements Serializable {
     private RequestStatus status;
     @Column
     private LocalDateTime created;
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Request && Objects.equals(((Request) obj).id, this.id);
+    }
 }

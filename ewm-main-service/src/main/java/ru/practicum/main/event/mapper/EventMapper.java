@@ -10,9 +10,9 @@ import ru.practicum.main.event.enums.EventState;
 import ru.practicum.main.event.model.Event;
 import ru.practicum.main.location.dto.LocationDto;
 import ru.practicum.main.location.model.Location;
-import ru.practicum.main.rating.util.RatingCalculator;
 import ru.practicum.main.user.dto.UserShortDto;
 import ru.practicum.main.user.model.User;
+import ru.practicum.main.util.RatingCalculator;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

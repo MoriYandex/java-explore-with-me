@@ -20,7 +20,7 @@ public class UpdateCompilationDto implements Serializable {
     /**
      * Список идентификаторов ${@link EventFullDto}
      */
-    private transient List<Long> events;
+    private List<Long> events;
     /**
      * Закреплена ли подборка на главной странице сайта
      */

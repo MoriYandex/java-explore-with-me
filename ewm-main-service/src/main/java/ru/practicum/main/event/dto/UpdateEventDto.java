@@ -1,14 +1,13 @@
 package ru.practicum.main.event.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.extern.jackson.Jacksonized;
 import ru.practicum.main.location.dto.LocationDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 
@@ -18,9 +17,8 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-@Jacksonized
 @AllArgsConstructor
-public class UpdateEventDto<T> {
+public class UpdateEventDto<T> implements Serializable {
     /**
      * Новая аннотация
      */
@@ -38,7 +36,6 @@ public class UpdateEventDto<T> {
     /**
      * Новые дата и время на которые намечено событие.
      */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @Future
     private LocalDateTime eventDate;
     /**

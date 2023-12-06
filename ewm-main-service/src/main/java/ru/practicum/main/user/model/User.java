@@ -6,6 +6,7 @@ import ru.practicum.main.rating.model.Rating;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -35,4 +36,14 @@ public class User implements Serializable {
     @JoinColumn(name = "initiator_id", insertable = false, nullable = false)
     @ToString.Exclude
     private Set<Rating> ratings = new HashSet<>();
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof User && Objects.equals(((User) obj).id, this.id);
+    }
 }

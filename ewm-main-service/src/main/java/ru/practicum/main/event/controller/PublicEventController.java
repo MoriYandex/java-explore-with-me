@@ -1,7 +1,6 @@
 package ru.practicum.main.event.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.main.event.dto.EventFullDto;
 import ru.practicum.main.event.dto.EventShortDto;
@@ -25,9 +24,9 @@ public class PublicEventController {
                                          @RequestParam(required = false) @Valid List<@Positive Long> categories,
                                          @RequestParam(required = false) Boolean paid,
                                          @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                             LocalDateTime rangeStart,
                                          @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now().plusYears(50)}")
-                                         @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                             LocalDateTime rangeEnd,
                                          @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
                                          @RequestParam(required = false) EventSort sort,
                                          @RequestParam(defaultValue = "0", required = false) Integer from,

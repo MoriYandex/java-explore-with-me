@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.main.event.enums.EventState;
+import ru.practicum.main.event.exception.EventNotFoundException;
 import ru.practicum.main.event.model.Event;
 import ru.practicum.main.event.repository.EventRepository;
-import ru.practicum.main.event.util.SharedEventRequests;
 import ru.practicum.main.request.dto.RequestDto;
 import ru.practicum.main.request.dto.RequestsListsDto;
 import ru.practicum.main.request.dto.UpdateRequestDto;
@@ -19,12 +19,13 @@ import ru.practicum.main.request.model.Request;
 import ru.practicum.main.request.repository.RequestRepository;
 import ru.practicum.main.user.model.User;
 import ru.practicum.main.user.repository.UserRepository;
-import ru.practicum.main.user.util.SharedUserRequests;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.main.util.SharedRequests.checkAndReturnUser;
 
 @Slf4j
 @Service
@@ -37,7 +38,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestDto> get(Long userId) {
-        SharedUserRequests.checkAndReturnUser(userRepository, userId);
+        checkAndReturnUser(userRepository, userId);
         List<Request> requests = requestRepository.findByRequesterId(userId);
         log.info("Get user requests. User id: {}, requests: {}", userId, requests);
         return requests.stream().map(RequestMapper::toRequestDto).collect(Collectors.toList());
@@ -47,8 +48,8 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public RequestDto create(Long userId, Long eventId) {
         log.info("Create user request. User id: {}, eventId: {}", userId, eventId);
-        Event event = SharedEventRequests.checkAndReturnEvent(eventRepository, eventId);
-        User user = SharedUserRequests.checkAndReturnUser(userRepository, userId);
+        Event event = checkAndReturnEvent(eventId);
+        User user = checkAndReturnUser(userRepository, userId);
         if (Boolean.TRUE.equals(requestRepository.existsByEventIdAndRequesterId(event.getId(), userId)))
             throw new RequestAlreadyCreatedConflictException();
         if (event.getInitiator().getId().equals(userId))
@@ -69,7 +70,7 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     public RequestDto cancel(Long userId, Long requestId) {
         log.info("Cancel user request. UserId: {}, requestId: {}", userId, requestId);
-        User user = SharedUserRequests.checkAndReturnUser(userRepository, userId);
+        User user = checkAndReturnUser(userRepository, userId);
         Request request = checkAndReturnRequest(requestId);
         if (!user.getId().equals(request.getRequester().getId()))
             throw new RequestUserConflictException();
@@ -91,7 +92,7 @@ public class RequestServiceImpl implements RequestService {
     public RequestsListsDto updateByEvent(Long userId, Long eventId, UpdateRequestDto updateRequestDto) {
         List<RequestDto> confirmedRequests = new ArrayList<>();
         List<RequestDto> rejectedRequests = new ArrayList<>();
-        Event event = SharedEventRequests.checkAndReturnEvent(eventRepository, eventId);
+        Event event = checkAndReturnEvent(eventId);
         if (event.getParticipants().size() >= event.getParticipantLimit())
             throw new ParticipantLimitConflictException();
         if (event.getState() != EventState.PUBLISHED)
@@ -117,5 +118,11 @@ public class RequestServiceImpl implements RequestService {
         log.info("Check request. Request id: {}", requestId);
         return requestRepository.findById(requestId).orElseThrow(() ->
                 new RequestNotFoundException(requestId));
+    }
+
+    private Event checkAndReturnEvent(Long eventId) {
+        log.info("SharedEventRequests check event. Event id: {}", eventId);
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException(eventId));
     }
 }

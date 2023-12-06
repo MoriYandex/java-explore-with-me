@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -24,4 +25,17 @@ public class Rating implements Serializable {
     private Boolean isPositive;
     @Column(name = "initiator_id")
     private long initiatorId;
+
+    @Override
+    public int hashCode() {
+        RatingCompositeKey key = new RatingCompositeKey(userId, eventId);
+        return key.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Rating
+                && Objects.equals(new RatingCompositeKey(((Rating) obj).getUserId(), ((Rating) obj).getEventId()),
+                new RatingCompositeKey(this.userId, this.eventId));
+    }
 }

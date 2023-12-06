@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Builder
@@ -19,4 +20,14 @@ public class Category implements Serializable {
 
     @Column(nullable = false, length = 512)
     private String name;
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Category && Objects.equals(((Category) obj).id, this.id);
+    }
 }

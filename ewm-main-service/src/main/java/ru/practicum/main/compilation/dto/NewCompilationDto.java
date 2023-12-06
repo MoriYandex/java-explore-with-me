@@ -22,7 +22,7 @@ public class NewCompilationDto implements Serializable {
      */
     @NotNull
     @Builder.Default
-    private transient Set<Long> events = new HashSet<>();
+    private Set<Long> events = new HashSet<>();
     /**
      * Закреплена ли подборка на главной странице сайта
      */

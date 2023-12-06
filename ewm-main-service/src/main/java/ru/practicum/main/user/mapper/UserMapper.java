@@ -1,11 +1,11 @@
 package ru.practicum.main.user.mapper;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.main.rating.util.RatingCalculator;
 import ru.practicum.main.user.dto.NewUserDto;
 import ru.practicum.main.user.dto.UserDto;
 import ru.practicum.main.user.dto.UserShortDto;
 import ru.practicum.main.user.model.User;
+import ru.practicum.main.util.RatingCalculator;
 
 import java.util.Optional;
 

@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -74,4 +75,14 @@ public class Event implements Serializable {
     @JoinColumn(name = "event_id")
     @ToString.Exclude
     private Set<Rating> ratings;
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Event && Objects.equals(((Event) obj).id, this.id);
+    }
 }

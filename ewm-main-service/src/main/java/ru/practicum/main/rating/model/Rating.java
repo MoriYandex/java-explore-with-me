@@ -28,14 +28,17 @@ public class Rating implements Serializable {
 
     @Override
     public int hashCode() {
-        RatingCompositeKey key = new RatingCompositeKey(userId, eventId);
+        RatingCompositeKey key = new RatingCompositeKey(this.userId, this.eventId);
         return key.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Rating
-                && Objects.equals(new RatingCompositeKey(((Rating) obj).getUserId(), ((Rating) obj).getEventId()),
-                new RatingCompositeKey(this.userId, this.eventId));
+        if (!(obj instanceof Rating))
+            return false;
+        RatingCompositeKey thisKey = new RatingCompositeKey(this.userId, this.eventId);
+        Rating that = (Rating) obj;
+        RatingCompositeKey thatKey = new RatingCompositeKey(that.getUserId(), that.getEventId());
+        return Objects.equals(thatKey, thisKey);
     }
 }

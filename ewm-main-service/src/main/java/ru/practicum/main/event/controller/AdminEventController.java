@@ -24,9 +24,9 @@ public class AdminEventController {
                                          @RequestParam(required = false) List<EventState> states,
                                          @RequestParam(required = false) List<Long> categories,
                                          @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                                             LocalDateTime rangeStart,
+                                         LocalDateTime rangeStart,
                                          @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now().plusYears(50)}")
-                                             LocalDateTime rangeEnd,
+                                         LocalDateTime rangeEnd,
                                          @RequestParam(defaultValue = "0", required = false) Integer from,
                                          @RequestParam(defaultValue = "10", required = false) Integer size) {
         return eventService.getByAdmin(users, states, categories, rangeStart, rangeEnd, PageRequest.of(from, size));

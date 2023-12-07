@@ -1,2 +1,3 @@
 # java-explore-with-me
-Template repository for ExploreWithMe project.
+ExploreWithMe project with Rating feature  
+https://github.com/MoriYandex/java-explore-with-me/pull/5

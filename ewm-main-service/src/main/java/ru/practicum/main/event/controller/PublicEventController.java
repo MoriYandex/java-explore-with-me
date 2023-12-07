@@ -24,9 +24,9 @@ public class PublicEventController {
                                          @RequestParam(required = false) @Valid List<@Positive Long> categories,
                                          @RequestParam(required = false) Boolean paid,
                                          @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now()}")
-                                             LocalDateTime rangeStart,
+                                         LocalDateTime rangeStart,
                                          @RequestParam(required = false, defaultValue = "#{T(java.time.LocalDateTime).now().plusYears(50)}")
-                                             LocalDateTime rangeEnd,
+                                         LocalDateTime rangeEnd,
                                          @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
                                          @RequestParam(required = false) EventSort sort,
                                          @RequestParam(defaultValue = "0", required = false) Integer from,
